@@ -39,8 +39,8 @@ class Ant:
 			self.setColor()
 			
 	def kill(self):
-		self.xPos = -20
-		self.yPos = -20
+		self.xPos = 1000
+		self.yPos = 1000
 		self.health = 0
 		self.dmg = 0
 		self.speed = 0

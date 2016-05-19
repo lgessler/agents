@@ -82,6 +82,7 @@ def update_screen():
 def checkDeadAnts():
 	for ant in antList:
 		if (ant.health <= 0):
+			map.map[int(ant.xPos)][int(ant.yPos)].remove(ant)
 			ant.kill()
 			antList.remove(ant)
   
@@ -127,7 +128,7 @@ screen.fill(pygame.Color('white'))
 pygame.display.set_caption("ants")
 clock = pygame.time.Clock()
 elapsed = 0.
-spawn_ants(333)
+spawn_ants(666)
 
 # loop until the user clicks the close button
 while True:
