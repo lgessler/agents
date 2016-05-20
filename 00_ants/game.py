@@ -102,7 +102,7 @@ def update_screen():
 		pygame.draw.circle(screen, color, (int(ant.xPos), int(ant.yPos)), radius)
 	for food in foodList:
 		color = [255, 165, 0]
-		pygame.draw.rect(screen, color, (int(food.xPos), int(food.yPos), 5, 5))
+		pygame.draw.rect(screen, food.color, (int(food.xPos - (food.quantity / 4)), int(food.yPos - (food.quantity / 4)), int(food.quantity / 2), int(food.quantity / 2)))
 	pygame.display.flip()
 
 def checkDeadAnts():
@@ -155,7 +155,7 @@ def run():
 	update_screen()
 
 	# control the draw update speed
-	elapsed = clock.tick(40)
+	elapsed = clock.tick(60)
 
 # initialise pygame
 pygame.init()

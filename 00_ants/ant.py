@@ -191,6 +191,32 @@ class Ant:
 			self.yPos = GAME_HEIGHT - 1
 			
 		map[int(self.xPos)][int(self.yPos)].append(self)
+		
+	def flee(self, map, seconds):
+		map[int(self.xPos)][int(self.yPos)].remove(self)
+		xTotal = 0
+		yTotal = 0
+		for enemy in self.hostileSurroundings:
+			xTotal += enemy.xPos
+			yTotal += enemy.yPos
+		xAvg = xTotal / len(self.hostileSurroundings)
+		yAvg = yTotal / len(self.hostileSurroundings)
+		
+		xMoveDir = self.getSign(self.xPos - xAvg)
+		self.xPos += xMoveDir * self.speed * seconds
+		if(self.xPos < 0):
+			self.xPos = 0
+		if(self.xPos > (GAME_WIDTH - 1)):
+			self.xPos = GAME_WIDTH - 1
+		
+		yMoveDir = self.getSign(self.yPos - xAvg)
+		self.yPos += yMoveDir * self.speed * seconds
+		if(self.yPos < 0):
+			self.yPos = 0
+		if(self.yPos > (GAME_HEIGHT - 1)):
+			self.yPos = GAME_HEIGHT - 1
+			
+		map[int(self.xPos)][int(self.yPos)].append(self)
 
 	def checkSurroundings(self, map):
 		#update hostilesurroundings and friendlysurroundings based on nearby ants on the map
@@ -208,12 +234,12 @@ class Ant:
 					for entity in map[row][column]:
 						if(entity.type is "ant"):
 							if(entity.faction is self.faction):
-								if(len(self.friendlySurroundings) > 5):
+								if(len(self.friendlySurroundings) > 10):
 								#ants, having poor memories, can only recognize up to 5 nearby comrades
 									break
 								self.friendlySurroundings.append(entity)
 							else:
-								if(len(self.hostileSurroundings) > 5):
+								if(len(self.hostileSurroundings) > 10):
 								#ants, having poor memories, can only recognize up to 5 nearby enemies
 									break
 								self.hostileSurroundings.append(entity)
@@ -224,17 +250,27 @@ class Ant:
 							self.foodSurroundings.append(entity)
 			
 	def decide(self):
+
 		if(len(self.hostileSurroundings) is not 0):
 		#first priority is enemy ants in the vicinity
-			if self.antToAttack not in self.hostileSurroundings:
-				#if the ant we were attacking has left our hostileSurroundings, find a new ant to attack
-				self.antToAttack = self.hostileSurroundings[random.randint(0, (len(self.hostileSurroundings) - 1))]
-			#if(abs(self.xPos - self.antToAttack.xPos) <= 6) and (abs(self.yPos - self.antToAttack.yPos) <= 6):
-			if(self.distanceTo(self.antToAttack) <= 5):
-				#ant in range
-				self.state = "attack"
+			if(self.health < 5):
+			#low hp = flee
+				self.state = "flee"
+			if(len(self.hostileSurroundings) <= len(self.friendlySurroundings) + 1):
+			#engage if it's at least a roughly proportional fight
+				if self.antToAttack not in self.hostileSurroundings:
+					#if the ant we were attacking has left our hostileSurroundings, find a new ant to attack
+					self.antToAttack = self.hostileSurroundings[random.randint(0, (len(self.hostileSurroundings) - 1))]
+				#if(abs(self.xPos - self.antToAttack.xPos) <= 6) and (abs(self.yPos - self.antToAttack.yPos) <= 6):
+				if(self.distanceTo(self.antToAttack) <= 5):
+					#ant in range
+					self.state = "attack"
+					return "attack"
+				else:
+					self.state = "attackMove"
+					return "attackMove"
 			else:
-				self.state = "attackMove"
+				self.state = "flee"
 		elif(len(self.foodSurroundings) is not 0):
 		#if the coast is clear, deal with nearby food
 			foodSourceDistance = self.distanceTo(self.foodSource)
@@ -245,10 +281,13 @@ class Ant:
 					self.foodSource = foodsource
 			if(self.distanceTo(self.foodSource) <= 5):
 				self.state = "eat"
+				return "eat"
 			else:
 				self.state = "eatMove"
+				return "eatMove"
 		else:
 			self.state = "wander"
+			return "wander"
 			
 
 	def act(self, map, seconds):
@@ -260,6 +299,8 @@ class Ant:
 			self.eat(seconds)
 		elif(self.state is "eatMove"):
 			self.eatMove(map, seconds)
+		elif(self.state is "flee"):
+			self.flee(map, seconds)
 		elif(self.state is "wander"):
 			self.move(random.randint(-1, 1), random.randint(-1, 1), map, seconds)
     

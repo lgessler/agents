@@ -16,15 +16,21 @@ class Food:
 		if(self.yPos is None):
 			self.yPos = random.randint(0, GAME_HEIGHT - 1)
 		if(self.quantity is None):
-			self.quantity = random.randint(1, 25)
+			self.quantity = random.randint(5, 25)
 		if(self.quality is None):
 			self.quality = random.randint(1, 10)
-			self.quality = max(1, self.quality - 5)
+			self.quality = max(1, self.quality - 3)
+			
+		self.setColor()
 		
 	def setPos(self, xPos, yPos, map):
 		self.xPos = xPos
 		self.yPos = yPos
 		map[int(self.xPos)][int(self.yPos)].append(self)
+		
+	def setColor(self):
+		self.color = [170 + int(self.quality * 7), 120, 0]
+		
 		
 	def kill(self):
 		self.xPos = 1000
