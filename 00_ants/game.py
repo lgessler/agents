@@ -76,7 +76,7 @@ def check_events():
 	# loop through all events
 	for event in pygame.event.get():
 		if(event.type is pygame.QUIT):
-			sys.quit()
+			sys.exit()
 		elif(event.type is pygame.MOUSEBUTTONDOWN):
 			if(event.button is 1):
 				print("mdown")
