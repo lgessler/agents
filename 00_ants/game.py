@@ -7,9 +7,10 @@ from map import Map
 GAME_WIDTH = 600
 GAME_HEIGHT = 600
 antList = []
-deadAnts = []
+foodList = []
 map = Map(GAME_WIDTH, GAME_HEIGHT)
 spawnAnts = False
+spawnFood = False
 pos = [0,0]
 
 def spawnMouseAnts():
@@ -19,6 +20,15 @@ def spawnMouseAnts():
 		spawnedAnt = Ant()
 		spawnedAnt.setPos(pos[0], pos[1], map.map)
 		antList.append(spawnedAnt)
+		
+def spawnMouseFood():
+	global spawnFood
+	global pos
+	if(spawnFood):
+		spawnedFood = Food()
+		spawnedFoot.setPos(pos[0], pos[1], map.map)
+		foodList.append(spawnedFood)
+		print(foodList)
 
 def spawn_ants(x):
 	redLocation = [random.randint(0, GAME_WIDTH - 1), random.randint(0, GAME_HEIGHT - 1)]
@@ -61,12 +71,18 @@ def check_events():
 		if(event.type is pygame.QUIT):
 			sys.quit()
 		if(event.type is pygame.MOUSEBUTTONDOWN):
-			print("mdown")
-			spawnAnts = True
-			pos = pygame.mouse.get_pos()
+			if(event.button is 1):
+				print("mdown")
+				spawnAnts = True
+				pos = pygame.mouse.get_pos()
+			if(event.button is 3):
+				print("food down")
+				spawnFood = True
+				post = pygame.mouse.get_pos()
 		if(event.type is pygame.MOUSEBUTTONUP):
 			print("mup")
 			spawnAnts = False
+			spawnFood = False
       
 def update_screen():
 	screen.fill(pygame.Color('white'))
@@ -77,6 +93,9 @@ def update_screen():
 		color = [colorR + random.randint(0, 10), colorG + random.randint(0, 10), colorB + random.randint(0, 10)]
 		radius = int(max(1, ant.health/7))
 		pygame.draw.circle(screen, color, (int(ant.xPos), int(ant.yPos)), radius)
+	for food in foodList:
+		color = [255, 165, 0]
+		pygame.draw.rect(screen, color, (int(food.xPos), int(food.yPos), 5, 5))
 	pygame.display.flip()
 
 def checkDeadAnts():
@@ -85,9 +104,17 @@ def checkDeadAnts():
 			map.map[int(ant.xPos)][int(ant.yPos)].remove(ant)
 			ant.kill()
 			antList.remove(ant)
+			
+def checkEmptyFood():
+	for food in foodList:
+		if(food.quantity <= 0):
+			map.map[int(food.xPos)][int(food.yPos)].remove(food)
+			food.kill()
+			foodList.remove(food)
   
 def update_logic(seconds):
 	spawnMouseAnts()
+	spawnMouseFood()
 	for ant in antList:
 		'''
 		print("---")
@@ -97,8 +124,10 @@ def update_logic(seconds):
 		print("---")
 		'''
 		ant.checkSurroundings(map.map)
+		ant.decide()
 		ant.act(map.map, seconds)
 	checkDeadAnts()
+	checkEmptyFood()
 		
 
 def run():
@@ -128,7 +157,7 @@ screen.fill(pygame.Color('white'))
 pygame.display.set_caption("ants")
 clock = pygame.time.Clock()
 elapsed = 0.
-spawn_ants(666)
+spawn_ants(100)
 
 # loop until the user clicks the close button
 while True:
