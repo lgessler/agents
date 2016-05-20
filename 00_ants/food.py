@@ -26,3 +26,9 @@ class Food:
 		self.yPos = yPos
 		map[int(self.xPos)][int(self.yPos)].append(self)
 		
+	def kill(self):
+		self.xPos = 1000
+		self.yPos = 1000
+		self.quantity = 0
+		self.quality = 0
+		

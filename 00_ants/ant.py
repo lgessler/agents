@@ -5,10 +5,10 @@ factionList = ["red", "blue", "green"]
 stateList = ["attack", "attackMove", "wander"]
 
 #this controls the length/width of the square used by each ant to check for enemies and friends around it
-enemyCheckRadius = 25
+enemyCheckRadius = 50
 
 #this controls the length/width of the square used by each ant to check for enemies and friends around it
-foodCheckRadius = 75
+foodCheckRadius = 150
 
 GAME_WIDTH = 600
 GAME_HEIGHT = 600
@@ -150,17 +150,18 @@ class Ant:
 			
 		map[int(self.xPos)][int(self.yPos)].append(self)
 		
-	def eat(seconds):
+	def eat(self, seconds):
 		if(self.foodSource.quantity <= 0):
 			self.foodSurroundings.remove(self.foodSource)
 			self.foodSource = None
-		plusMod = self.foodSource.quality
-		foodEaten = seconds
-		self.foodSource.quantity -= seconds
-		self.health += seconds * plusMod
-		self.dmg += seconds * plusMod * .2
+		else:
+			plusMod = self.foodSource.quality
+			foodEaten = seconds
+			self.foodSource.quantity -= seconds
+			self.health += seconds * plusMod
+			self.dmg += seconds * plusMod * .2
 
-	def eatMove(seconds):
+	def eatMove(self, map, seconds):
 		map[int(self.xPos)][int(self.yPos)].remove(self)
 		
 		#handle new X coordinate position
@@ -195,6 +196,7 @@ class Ant:
 		#update hostilesurroundings and friendlysurroundings based on nearby ants on the map
 		self.friendlySurroundings[:] = []
 		self.hostileSurroundings[:] = []
+		self.foodSurroundings[:] = []
 		minCheckX = max(0, int(self.xPos) - enemyCheckRadius)
 		maxCheckX = min(GAME_WIDTH - 1, int(self.xPos) + enemyCheckRadius)
 		minCheckY = max(0, int(self.yPos) - enemyCheckRadius)
@@ -215,6 +217,11 @@ class Ant:
 								#ants, having poor memories, can only recognize up to 5 nearby enemies
 									break
 								self.hostileSurroundings.append(entity)
+								
+						if(entity.type is "food"):
+							if(len(self.foodSurroundings) > 5):
+								break
+							self.foodSurroundings.append(entity)
 			
 	def decide(self):
 		if(len(self.hostileSurroundings) is not 0):
@@ -223,7 +230,7 @@ class Ant:
 				#if the ant we were attacking has left our hostileSurroundings, find a new ant to attack
 				self.antToAttack = self.hostileSurroundings[random.randint(0, (len(self.hostileSurroundings) - 1))]
 			#if(abs(self.xPos - self.antToAttack.xPos) <= 6) and (abs(self.yPos - self.antToAttack.yPos) <= 6):
-			if(self.distanceTo(self.antToAttack) <= 10):
+			if(self.distanceTo(self.antToAttack) <= 5):
 				#ant in range
 				self.state = "attack"
 			else:
@@ -232,11 +239,11 @@ class Ant:
 		#if the coast is clear, deal with nearby food
 			foodSourceDistance = self.distanceTo(self.foodSource)
 			for foodsource in self.foodSurroundings:
-				curFoodsourceDistance = self.distanceToSource(foodsource)
+				curFoodSourceDistance = self.distanceTo(foodsource)
 				if(curFoodSourceDistance < foodSourceDistance):
 					foodSourceDistance = curFoodSourceDistance
-					self.foodSource = foodSource
-			if(self.distanceTo(self.foodSource) <= 10):
+					self.foodSource = foodsource
+			if(self.distanceTo(self.foodSource) <= 5):
 				self.state = "eat"
 			else:
 				self.state = "eatMove"

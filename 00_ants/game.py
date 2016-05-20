@@ -3,6 +3,7 @@
 import pygame, sys, random
 from ant import Ant
 from map import Map
+from food import Food
 
 GAME_WIDTH = 600
 GAME_HEIGHT = 600
@@ -26,9 +27,9 @@ def spawnMouseFood():
 	global pos
 	if(spawnFood):
 		spawnedFood = Food()
-		spawnedFoot.setPos(pos[0], pos[1], map.map)
+		spawnedFood.setPos(pos[0], pos[1], map.map)
 		foodList.append(spawnedFood)
-		print(foodList)
+		print("spawnFood")
 
 def spawn_ants(x):
 	redLocation = [random.randint(0, GAME_WIDTH - 1), random.randint(0, GAME_HEIGHT - 1)]
@@ -62,24 +63,30 @@ def spawn_test_ants():
 	greenAnt.health = 100
 	greenAnt.setPos(greenLocation[0], greenLocation[1], map.map)
 	antList.append(greenAnt)
+	
+def spawn_test_food():
+	food = Food()
+	food.setPos(300, 300, map.map)
+	foodList.append(food)
 
 def check_events():
 	global spawnAnts
+	global spawnFood
 	global pos
 	# loop through all events
 	for event in pygame.event.get():
 		if(event.type is pygame.QUIT):
 			sys.quit()
-		if(event.type is pygame.MOUSEBUTTONDOWN):
+		elif(event.type is pygame.MOUSEBUTTONDOWN):
 			if(event.button is 1):
 				print("mdown")
 				spawnAnts = True
 				pos = pygame.mouse.get_pos()
-			if(event.button is 3):
+			elif(event.button is 3):
 				print("food down")
 				spawnFood = True
 				post = pygame.mouse.get_pos()
-		if(event.type is pygame.MOUSEBUTTONUP):
+		elif(event.type is pygame.MOUSEBUTTONUP):
 			print("mup")
 			spawnAnts = False
 			spawnFood = False
@@ -148,7 +155,7 @@ def run():
 	update_screen()
 
 	# control the draw update speed
-	elapsed = clock.tick(50)
+	elapsed = clock.tick(40)
 
 # initialise pygame
 pygame.init()
@@ -158,6 +165,7 @@ pygame.display.set_caption("ants")
 clock = pygame.time.Clock()
 elapsed = 0.
 spawn_ants(100)
+spawn_test_food()
 
 # loop until the user clicks the close button
 while True:
