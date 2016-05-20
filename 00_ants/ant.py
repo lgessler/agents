@@ -1,4 +1,4 @@
-import itertools, random
+import itertools, random, math
 from map import Map
 
 factionList = ["red", "blue", "green"]
@@ -89,9 +89,20 @@ class Ant:
 		
 	def joinSquad(self, squad):
 		squad.add(self)
+		
+	def normalize(self, v):
+		lengthSquared = v[0] * v[0] + v[1] * v[1];
+		if (lengthSquared is not 0):
+			length = math.sqrt(lengthSquared)
+			v[0] /= length
+			v[1] /= length
+		return v
       
 	def move(self, x, y, map, seconds):
 		map[int(self.xPos)][int(self.yPos)].remove(self)
+		moveVect = self.normalize([x, y])
+		x = moveVect[0]
+		y = moveVect[1]
 		self.xPos += x * self.speed * seconds
 		if(self.xPos < 0):
 			self.xPos = 0
@@ -193,7 +204,7 @@ class Ant:
 		map[int(self.xPos)][int(self.yPos)].append(self)
 		
 	def flee(self, map, seconds):
-		map[int(self.xPos)][int(self.yPos)].remove(self)
+		#map[int(self.xPos)][int(self.yPos)].remove(self)
 		xTotal = 0
 		yTotal = 0
 		for enemy in self.hostileSurroundings:
@@ -201,7 +212,11 @@ class Ant:
 			yTotal += enemy.yPos
 		xAvg = xTotal / len(self.hostileSurroundings)
 		yAvg = yTotal / len(self.hostileSurroundings)
+		xMoveDir = self.getSign(self.xPos - xAvg)
+		yMoveDir = self.getSign(self.yPos - xAvg)
 		
+		self.move(xMoveDir, yMoveDir, map, seconds)
+		'''
 		xMoveDir = self.getSign(self.xPos - xAvg)
 		self.xPos += xMoveDir * self.speed * seconds
 		if(self.xPos < 0):
@@ -215,8 +230,8 @@ class Ant:
 			self.yPos = 0
 		if(self.yPos > (GAME_HEIGHT - 1)):
 			self.yPos = GAME_HEIGHT - 1
-			
-		map[int(self.xPos)][int(self.yPos)].append(self)
+		'''
+		#map[int(self.xPos)][int(self.yPos)].append(self)
 
 	def checkSurroundings(self, map):
 		#update hostilesurroundings and friendlysurroundings based on nearby ants on the map
@@ -234,12 +249,12 @@ class Ant:
 					for entity in map[row][column]:
 						if(entity.type is "ant"):
 							if(entity.faction is self.faction):
-								if(len(self.friendlySurroundings) > 10):
+								if(len(self.friendlySurroundings) > 50):
 								#ants, having poor memories, can only recognize up to 5 nearby comrades
 									break
 								self.friendlySurroundings.append(entity)
 							else:
-								if(len(self.hostileSurroundings) > 10):
+								if(len(self.hostileSurroundings) > 50):
 								#ants, having poor memories, can only recognize up to 5 nearby enemies
 									break
 								self.hostileSurroundings.append(entity)
