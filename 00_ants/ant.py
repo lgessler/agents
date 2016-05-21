@@ -2,7 +2,10 @@ import itertools, random, math
 from map import Map
 
 factionList = ["red", "blue", "green"]
-stateList = ["attack", "attackMove", "wander"]
+stateList = ["attack", "attackMove", "wander", "eat", "eatMove"]
+
+#TODO: can we store what the ant's been doing and base future actions on that?
+stateHistory = []
 
 #this controls the length/width of the square used by each ant to check for enemies and friends around it
 enemyCheckRadius = 50
@@ -85,7 +88,7 @@ class Ant:
 	def setPos(self, x, y, map):
 		self.xPos = x
 		self.yPos = y
-		map[int(self.xPos)][int(self.yPos)].append(self)
+		map.addAnt(x, y, self)
 		
 	def joinSquad(self, squad):
 		squad.add(self)
@@ -99,7 +102,7 @@ class Ant:
 		return v
       
 	def move(self, x, y, map, seconds):
-		map[int(self.xPos)][int(self.yPos)].remove(self)
+		map.removeAnt(self.xPos, self.yPos, self)
 		moveVect = self.normalize([x, y])
 		x = moveVect[0]
 		y = moveVect[1]
@@ -113,7 +116,7 @@ class Ant:
 			self.yPos = 0
 		if(self.yPos > GAME_HEIGHT - 1):
 			self.yPos = GAME_HEIGHT - 1
-		map[int(self.xPos)][int(self.yPos)].append(self)
+		map.addAnt(self.xPos, self.yPos, self)
 		
 	def getSign(self, x):
 		if (x > 0):
@@ -131,7 +134,7 @@ class Ant:
 				self.antToAttack = None
 		
 	def attackMove(self, map, seconds):
-		map[int(self.xPos)][int(self.yPos)].remove(self)
+		map.removeAnt(self.xPos, self.yPos, self)
 		
 		#handle new X coordinate position
 		originalXSign = self.getSign(self.antToAttack.xPos - self.xPos)
@@ -159,7 +162,7 @@ class Ant:
 		if(self.yPos > (GAME_HEIGHT - 1)):
 			self.yPos = GAME_HEIGHT - 1
 			
-		map[int(self.xPos)][int(self.yPos)].append(self)
+		map.addAnt(self.xPos, self.yPos, self)
 		
 	def eat(self, seconds):
 		if(self.foodSource.quantity <= 0):
@@ -173,7 +176,7 @@ class Ant:
 			self.dmg += seconds * plusMod * .2
 
 	def eatMove(self, map, seconds):
-		map[int(self.xPos)][int(self.yPos)].remove(self)
+		map.removeAnt(self.xPos, self.yPos, self)
 		
 		#handle new X coordinate position
 		originalXSign = self.getSign(self.foodSource.xPos - self.xPos)
@@ -201,7 +204,7 @@ class Ant:
 		if(self.yPos > (GAME_HEIGHT - 1)):
 			self.yPos = GAME_HEIGHT - 1
 			
-		map[int(self.xPos)][int(self.yPos)].append(self)
+		map.addAnt(self.xPos, self.yPos, self)
 		
 	def flee(self, map, seconds):
 		#map[int(self.xPos)][int(self.yPos)].remove(self)
@@ -245,8 +248,8 @@ class Ant:
 
 		for row in range(minCheckX, maxCheckX):
 			for column in range(minCheckY, maxCheckY):
-				if(len(map[row][column]) != 0):
-					for entity in map[row][column]:
+				if(len((map[row][column]).getOccupants()) != 0):
+					for entity in map[row][column].getOccupants():
 						if(entity.type is "ant"):
 							if(entity.faction is self.faction):
 								if(len(self.friendlySurroundings) > 50):

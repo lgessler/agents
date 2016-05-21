@@ -26,7 +26,7 @@ class Food:
 	def setPos(self, xPos, yPos, map):
 		self.xPos = xPos
 		self.yPos = yPos
-		map[int(self.xPos)][int(self.yPos)].append(self)
+		map.addFood(xPos, yPos, self)
 		
 	def setColor(self):
 		self.color = [170 + int(self.quality * 7), 120, 0]

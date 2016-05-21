@@ -3,6 +3,7 @@
 import pygame, sys, random
 from ant import Ant
 from map import Map
+from tile import Tile
 from food import Food
 
 GAME_WIDTH = 600
@@ -19,7 +20,7 @@ def spawnMouseAnts():
 	global pos
 	if(spawnAnts):
 		spawnedAnt = Ant()
-		spawnedAnt.setPos(pos[0], pos[1], map.map)
+		spawnedAnt.setPos(pos[0], pos[1], map)
 		antList.append(spawnedAnt)
 		
 def spawnMouseFood():
@@ -27,7 +28,7 @@ def spawnMouseFood():
 	global pos
 	if(spawnFood):
 		spawnedFood = Food()
-		spawnedFood.setPos(pos[0], pos[1], map.map)
+		spawnedFood.setPos(pos[0], pos[1], map)
 		foodList.append(spawnedFood)
 		print("spawnFood")
 
@@ -40,11 +41,11 @@ def spawn_ants(x):
 		antList.append(Ant())
 		antList[number].setState("wander")
 		if(antList[number].faction is "red"):
-			antList[number].setPos(redLocation[0], redLocation[1], map.map)
+			antList[number].setPos(redLocation[0], redLocation[1], map)
 		if(antList[number].faction is "blue"):
-			antList[number].setPos(blueLocation[0], blueLocation[1], map.map)
+			antList[number].setPos(blueLocation[0], blueLocation[1], map)
 		if(antList[number].faction is "green"):
-			antList[number].setPos(greenLocation[0], greenLocation[1], map.map)
+			antList[number].setPos(greenLocation[0], greenLocation[1], map)
 			
 def spawn_test_ants():
 	redLocation = [100, 100]
@@ -54,19 +55,19 @@ def spawn_test_ants():
 	redAnt.setFaction("red")
 	redAnt.setColor()
 	redAnt.health = 25
-	redAnt.setPos(redLocation[0], redLocation[1], map.map)
+	redAnt.setPos(redLocation[0], redLocation[1], map)
 	antList.append(redAnt)
 	
 	greenAnt = Ant()
 	greenAnt.setFaction("green")
 	greenAnt.setColor()
 	greenAnt.health = 100
-	greenAnt.setPos(greenLocation[0], greenLocation[1], map.map)
+	greenAnt.setPos(greenLocation[0], greenLocation[1], map)
 	antList.append(greenAnt)
 	
 def spawn_test_food():
 	food = Food()
-	food.setPos(300, 300, map.map)
+	food.setPos(300, 300, map)
 	foodList.append(food)
 
 def check_events():
@@ -98,7 +99,7 @@ def update_screen():
 		colorG = ant.getColor()[1]
 		colorB = ant.getColor()[2]
 		color = [colorR + random.randint(0, 10), colorG + random.randint(0, 10), colorB + random.randint(0, 10)]
-		radius = int(max(1, ant.health/7))
+		radius = int(max(2, ant.health/12))
 		pygame.draw.circle(screen, color, (int(ant.xPos), int(ant.yPos)), radius)
 	for food in foodList:
 		color = [255, 165, 0]
@@ -108,14 +109,14 @@ def update_screen():
 def checkDeadAnts():
 	for ant in antList:
 		if (ant.health <= 0):
-			map.map[int(ant.xPos)][int(ant.yPos)].remove(ant)
+			map.removeAnt(ant.xPos, ant.yPos, ant)
 			ant.kill()
 			antList.remove(ant)
 			
 def checkEmptyFood():
 	for food in foodList:
 		if(food.quantity <= 0):
-			map.map[int(food.xPos)][int(food.yPos)].remove(food)
+			map.removeFood(food.xPos, food.yPos, food)
 			food.kill()
 			foodList.remove(food)
   
@@ -130,9 +131,9 @@ def update_logic(seconds):
 		print("Ant hostile list: " + str(ant.hostileSurroundings))
 		print("---")
 		'''
-		ant.checkSurroundings(map.map)
+		ant.checkSurroundings(map)
 		ant.decide()
-		ant.act(map.map, seconds)
+		ant.act(map, seconds)
 	checkDeadAnts()
 	checkEmptyFood()
 		
@@ -141,6 +142,9 @@ def run():
 	global pos
 	global elapsed
 	pos = pygame.mouse.get_pos()
+	
+	#print(ants)
+	#print(antList)
 	
 	#update clock info
 	seconds = elapsed/1000.0
@@ -164,7 +168,7 @@ screen.fill(pygame.Color('white'))
 pygame.display.set_caption("ants")
 clock = pygame.time.Clock()
 elapsed = 0.
-spawn_ants(100)
+spawn_ants(66)
 spawn_test_food()
 
 # loop until the user clicks the close button
