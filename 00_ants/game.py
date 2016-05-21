@@ -5,6 +5,7 @@ from ant import Ant
 from map import Map
 from tile import Tile
 from food import Food
+from dirt import Dirt
 
 GAME_WIDTH = 600
 GAME_HEIGHT = 600
@@ -65,6 +66,10 @@ def spawn_test_ants():
 	greenAnt.setPos(greenLocation[0], greenLocation[1], map)
 	antList.append(greenAnt)
 	
+def spawn_test_dirt():
+	oneDirt = Dirt(150, 150, 3)
+	map.addDirt(oneDirt)
+	
 def spawn_test_food():
 	food = Food()
 	food.setPos(300, 300, map)
@@ -80,20 +85,20 @@ def check_events():
 			sys.exit()
 		elif(event.type is pygame.MOUSEBUTTONDOWN):
 			if(event.button is 1):
-				print("mdown")
 				spawnAnts = True
 				pos = pygame.mouse.get_pos()
 			elif(event.button is 3):
-				print("food down")
 				spawnFood = True
 				post = pygame.mouse.get_pos()
 		elif(event.type is pygame.MOUSEBUTTONUP):
-			print("mup")
 			spawnAnts = False
 			spawnFood = False
       
 def update_screen():
 	screen.fill(pygame.Color('white'))
+	for dirt in map.dirtList:
+		pygame.draw.rect(screen, [255, 255, 255], (dirt.xPos, dirt.yPos, 5, 5))
+			
 	for ant in antList:
 		colorR = ant.getColor()[0]
 		colorG = ant.getColor()[1]
@@ -168,8 +173,9 @@ screen.fill(pygame.Color('white'))
 pygame.display.set_caption("ants")
 clock = pygame.time.Clock()
 elapsed = 0.
-spawn_ants(66)
+spawn_ants(12)
 spawn_test_food()
+spawn_test_dirt()
 
 # loop until the user clicks the close button
 while True:

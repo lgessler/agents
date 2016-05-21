@@ -1,10 +1,12 @@
 from tile import Tile
+from dirt import Dirt
 
 class Map:
 	def __init__(self, rows, columns):
 		self.rows = rows
 		self.columns = columns
 		self.map = []
+		self.dirtList = []
 		for column in range(self.columns):
 			self.map.append([])
 			for row in range(self.rows):
@@ -23,6 +25,14 @@ class Map:
 	def removeAnt(self, x, y, ant):
 		self.map[int(x)][int(y)].ants.remove(ant)
 		
+	def addDirt(self, dirt):
+		self.map[int(dirt.xPos)][int(dirt.yPos)].terrain = dirt
+		self.dirtList.append(dirt)
+	
+	def removeDirt(self, dirt):
+		self.map[int(dirt.xPos)][int(dirt.yPos)].terrain = None
+		self.dirtList.remove(dirt)
+		
 	def addFood(self, x, y, food):
 		self.map[int(x)][int(y)].foods.append(food)
 		
@@ -31,3 +41,10 @@ class Map:
 		
 	def setTerrain(self, x, y, terrain):
 		self.map[int(x)][int(y)].terrain = terrain
+		
+	def dig(self, digTarget, digSpeed, digTime):
+			digTarget.amount -= digSpeed * digTime
+			if digTarget.amount <= 0:
+				self.digList.remove(digTarget)
+				digTarget = None
+			return digTarget

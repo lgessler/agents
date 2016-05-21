@@ -1,10 +1,10 @@
+from dirt import Dirt
+
 class Tile:
 	def __init__(self, terrain=None, ants=None, foods=None):
-		self.terrain = terrain
+		self.terrain = None
 		self.ants = ants
 		self.foods = foods
-		if(self.terrain is None):
-			self.terrain = "dirt"
 		if(self.ants is None):
 			self.ants = []
 		if(self.foods is None):

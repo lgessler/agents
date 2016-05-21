@@ -17,7 +17,7 @@ GAME_WIDTH = 600
 GAME_HEIGHT = 600
 
 class Ant:
-	def __init__(self, xPos=None, yPos=None, health=None, dmg=None, speed=None, faction=None, color=None):
+	def __init__(self, xPos=None, yPos=None, health=None, dmg=None, speed=None, digSpeed=None, faction=None, color=None):
 		self.type = "ant"
 
 		self.friendlySurroundings = []
@@ -27,12 +27,14 @@ class Ant:
 		self.antToAttack = None
 		self.squad = None
 		self.foodSource = None
+		self.digTarget = None
 		
 		self.xPos = xPos if xPos else random.randint(0, GAME_WIDTH - 1)
 		self.yPos = yPos if yPos else random.randint(0, GAME_HEIGHT - 1)
 		self.health = health if health else random.uniform(5, 40)
 		self.dmg = dmg if dmg else random.uniform(2, 6)
 		self.speed = speed if speed else random.uniform(20, 35)
+		self.digSpeed = digSpeed if digSpeed else random.uniform(0.3, 0.6)
 		self.faction = faction if faction else factionList[random.randint(0, 2)]
 		self.color = color 
 
@@ -92,7 +94,11 @@ class Ant:
 			v[0] /= length
 			v[1] /= length
 		return v
-      
+		
+	def dig(self, map, seconds):
+		#decrements amount of dirt by appropriate amount. returns digTarget until amount < 0, in which case returns 0
+		self.digTarget = map.dig(self.digTarget, self.digSpeed, seconds)
+		
 	def move(self, x, y, map, seconds):
 		map.removeAnt(self.xPos, self.yPos, self)
 		moveVect = self.normalize([x, y])
