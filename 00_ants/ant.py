@@ -19,13 +19,7 @@ GAME_HEIGHT = 600
 class Ant:
 	def __init__(self, xPos=None, yPos=None, health=None, dmg=None, speed=None, faction=None, color=None):
 		self.type = "ant"
-		self.xPos = xPos
-		self.yPos = yPos
-		self.health = health
-		self.dmg = dmg
-		self.speed = speed
-		self.faction = faction
-		self.color = color
+
 		self.friendlySurroundings = []
 		self.hostileSurroundings = []
 		self.foodSurroundings = []
@@ -33,20 +27,18 @@ class Ant:
 		self.antToAttack = None
 		self.squad = None
 		self.foodSource = None
-		if(self.xPos is None):
-			self.xPos = random.randint(0, GAME_WIDTH - 1)
-		if(self.yPos is None):
-			self.yPos = random.randint(0, GAME_HEIGHT - 1)
-		if(self.health is None):
-			self.health = random.uniform(5, 40)
-		if(self.speed is None):
-			self.speed = random.uniform(20, 35)
-		if(self.dmg is None):
-			self.dmg = random.uniform(2, 6)
-		if(self.faction is None):
-			self.faction = factionList[random.randint(0, 2)]
-		if(self.color is None):
+		
+		self.xPos = xPos if xPos else random.randint(0, GAME_WIDTH - 1)
+		self.yPos = yPos if yPos else random.randint(0, GAME_HEIGHT - 1)
+		self.health = health if health else random.uniform(5, 40)
+		self.dmg = dmg if dmg else random.uniform(2, 6)
+		self.speed = speed if speed else random.uniform(20, 35)
+		self.faction = faction if faction else factionList[random.randint(0, 2)]
+		self.color = color 
+
+		if not color: 
 			self.setColor()
+			
 			
 	def kill(self):
 		self.xPos = 1000
