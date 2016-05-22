@@ -33,6 +33,9 @@ class Map:
 		self.map[int(dirt.xPos)][int(dirt.yPos)].terrain = None
 		self.dirtList.remove(dirt)
 		
+	def dirtAt(self, x, y):
+		return self.map[int(x)][int(y)].terrain
+		
 	def addFood(self, x, y, food):
 		self.map[int(x)][int(y)].foods.append(food)
 		
@@ -43,8 +46,11 @@ class Map:
 		self.map[int(x)][int(y)].terrain = terrain
 		
 	def dig(self, digTarget, digSpeed, digTime):
-			digTarget.amount -= digSpeed * digTime
-			if digTarget.amount <= 0:
-				self.digList.remove(digTarget)
-				digTarget = None
-			return digTarget
+			if(digTarget is not None and digTarget in self.dirtList):
+				digTarget.amount -= digSpeed * digTime
+				if digTarget.amount <= 0:
+					self.dirtList.remove(digTarget)
+					digTarget = None
+				return digTarget
+			else:
+				return None

@@ -13,8 +13,42 @@ antList = []
 foodList = []
 map = Map(GAME_WIDTH, GAME_HEIGHT)
 spawnAnts = False
+spawnRAnts = False
+spawnBAnts = False
+spawnGAnts = False
 spawnFood = False
+spawnDirt = False
 pos = [0,0]
+
+def spawnRedAnts():
+	global spawnRedAnts
+	global pos
+	if(spawnRAnts):
+		spawnedRedAnt = Ant()
+		spawnedRedAnt.setPos(pos[0], pos[1], map)
+		spawnedRedAnt.setFaction("red")
+		spawnedRedAnt.setColor()
+		antList.append(spawnedRedAnt)
+
+def spawnBlueAnts():
+	global spawnBlueAnts
+	global pos
+	if(spawnBAnts):
+		spawnedBlueAnt = Ant()
+		spawnedBlueAnt.setPos(pos[0], pos[1], map)
+		spawnedBlueAnt.setFaction("blue")
+		spawnedBlueAnt.setColor()
+		antList.append(spawnedBlueAnt)
+
+def spawnGreenAnts():
+	global spawnGreenAnts
+	global pos
+	if(spawnGAnts):
+		spawnedGreenAnt = Ant()
+		spawnedGreenAnt.setPos(pos[0], pos[1], map)
+		spawnedGreenAnt.setFaction("green")
+		spawnedGreenAnt.setColor()
+		antList.append(spawnedGreenAnt)
 
 def spawnMouseAnts():
 	global spawnAnts
@@ -31,8 +65,15 @@ def spawnMouseFood():
 		spawnedFood = Food()
 		spawnedFood.setPos(pos[0], pos[1], map)
 		foodList.append(spawnedFood)
-		print("spawnFood")
-
+		
+def spawnMouseDirt():
+	global spawnDirt
+	global pos
+	if(spawnDirt):
+		spawnedDirt = Dirt()
+		spawnedDirt.setPos(pos[0], pos[1], map)
+		map.dirtList.append(spawnedDirt)
+		
 def spawn_ants(x):
 	redLocation = [random.randint(0, GAME_WIDTH - 1), random.randint(0, GAME_HEIGHT - 1)]
 	greenLocation = [random.randint(0, GAME_WIDTH - 1), random.randint(0, GAME_HEIGHT - 1)]
@@ -67,8 +108,10 @@ def spawn_test_ants():
 	antList.append(greenAnt)
 	
 def spawn_test_dirt():
-	oneDirt = Dirt(150, 150, 3)
-	map.addDirt(oneDirt)
+	for column in range(10):
+		for row in range(10):
+			spawnedDirt = Dirt(row, column, 1)
+			map.addDirt(spawnedDirt)
 	
 def spawn_test_food():
 	food = Food()
@@ -78,27 +121,58 @@ def spawn_test_food():
 def check_events():
 	global spawnAnts
 	global spawnFood
+	global spawnDirt
+	global spawnRAnts
+	global spawnBAnts
+	global spawnGAnts
 	global pos
 	# loop through all events
 	for event in pygame.event.get():
 		if(event.type is pygame.QUIT):
 			sys.exit()
 		elif(event.type is pygame.MOUSEBUTTONDOWN):
+			pos = pygame.mouse.get_pos()
 			if(event.button is 1):
+			# left click spawns ants
 				spawnAnts = True
-				pos = pygame.mouse.get_pos()
 			elif(event.button is 3):
+			# right click spawns food
 				spawnFood = True
-				post = pygame.mouse.get_pos()
 		elif(event.type is pygame.MOUSEBUTTONUP):
+		# releasing mouse stops spawning
 			spawnAnts = False
 			spawnFood = False
+		elif(event.type is pygame.KEYDOWN):
+			pos = pygame.mouse.get_pos()
+			if(event.key is pygame.K_d):
+			# pressing d spawns dirt
+				spawnDirt = True
+			if(event.key is pygame.K_r):
+				spawnRAnts = True
+			if(event.key is pygame.K_g):
+				spawnBAnts = True
+			if(event.key is pygame.K_b):
+				spawnGAnts = True
+		elif(event.type is pygame.KEYUP):
+			if(event.key is pygame.K_d):
+			# releasing d stops dirt spawning
+				spawnDirt = False
+			if(event.key is pygame.K_r):
+				spawnRAnts = False
+			if(event.key is pygame.K_b):
+				spawnBAnts = False
+			if(event.key is pygame.K_g):
+				spawnGAnts = False
+			
       
 def update_screen():
 	screen.fill(pygame.Color('white'))
+	
+	# draw dirt
 	for dirt in map.dirtList:
-		pygame.draw.rect(screen, [255, 255, 255], (dirt.xPos, dirt.yPos, 5, 5))
+		pygame.draw.rect(screen, [252, 190, 120], (dirt.xPos, dirt.yPos, 2, 2))
 			
+	# draw ants
 	for ant in antList:
 		colorR = ant.getColor()[0]
 		colorG = ant.getColor()[1]
@@ -106,12 +180,16 @@ def update_screen():
 		color = [colorR + random.randint(0, 10), colorG + random.randint(0, 10), colorB + random.randint(0, 10)]
 		radius = int(max(2, ant.health/12))
 		pygame.draw.circle(screen, color, (int(ant.xPos), int(ant.yPos)), radius)
+		
+	# draw food
 	for food in foodList:
-		color = [255, 165, 0]
 		pygame.draw.rect(screen, food.color, (int(food.xPos - (food.quantity / 4)), int(food.yPos - (food.quantity / 4)), int(food.quantity / 2), int(food.quantity / 2)))
+		
+	# push the pic
 	pygame.display.flip()
 
 def checkDeadAnts():
+# stop tracking status of dead ants
 	for ant in antList:
 		if (ant.health <= 0):
 			map.removeAnt(ant.xPos, ant.yPos, ant)
@@ -119,6 +197,7 @@ def checkDeadAnts():
 			antList.remove(ant)
 			
 def checkEmptyFood():
+# stop tracking the status of finished food
 	for food in foodList:
 		if(food.quantity <= 0):
 			map.removeFood(food.xPos, food.yPos, food)
@@ -127,15 +206,12 @@ def checkEmptyFood():
   
 def update_logic(seconds):
 	spawnMouseAnts()
+	spawnRedAnts()
+	spawnBlueAnts()
+	spawnGreenAnts()
 	spawnMouseFood()
+	spawnMouseDirt()
 	for ant in antList:
-		'''
-		print("---")
-		print("Ant health: " + str(ant.health))
-		print("Ant state: " + ant.state)
-		print("Ant hostile list: " + str(ant.hostileSurroundings))
-		print("---")
-		'''
 		ant.checkSurroundings(map)
 		ant.decide()
 		ant.act(map, seconds)
@@ -147,9 +223,6 @@ def run():
 	global pos
 	global elapsed
 	pos = pygame.mouse.get_pos()
-	
-	#print(ants)
-	#print(antList)
 	
 	#update clock info
 	seconds = elapsed/1000.0

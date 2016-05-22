@@ -29,7 +29,7 @@ class Food:
 		map.addFood(xPos, yPos, self)
 		
 	def setColor(self):
-		self.color = [170 + int(self.quality * 7), 120, 0]
+		self.color = [200 + int(self.quality * 5), 103, 243]
 		
 		
 	def kill(self):

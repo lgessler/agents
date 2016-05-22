@@ -1,11 +1,9 @@
 import itertools, random, math
+from collections import deque
 from map import Map
 
 factionList = ["red", "blue", "green"]
 stateList = ["attack", "attackMove", "wander", "eat", "eatMove"]
-
-#TODO: can we store what the ant's been doing and base future actions on that?
-stateHistory = []
 
 #this controls the length/width of the square used by each ant to check for enemies and friends around it
 enemyCheckRadius = 50
@@ -29,14 +27,17 @@ class Ant:
 		self.foodSource = None
 		self.digTarget = None
 		
-		self.xPos = xPos if xPos else random.randint(0, GAME_WIDTH - 1)
-		self.yPos = yPos if yPos else random.randint(0, GAME_HEIGHT - 1)
-		self.health = health if health else random.uniform(5, 40)
-		self.dmg = dmg if dmg else random.uniform(2, 6)
-		self.speed = speed if speed else random.uniform(20, 35)
-		self.digSpeed = digSpeed if digSpeed else random.uniform(0.3, 0.6)
-		self.faction = faction if faction else factionList[random.randint(0, 2)]
+		self.xPos = xPos if xPos is not None else random.randint(0, GAME_WIDTH - 1)
+		self.yPos = yPos if yPos is not None else random.randint(0, GAME_HEIGHT - 1)
+		self.health = health if health is not None else random.uniform(5, 40)
+		self.dmg = dmg if dmg is not None else random.uniform(2, 6)
+		self.speed = speed if speed is not None else random.uniform(20, 35)
+		self.digSpeed = digSpeed if digSpeed is not None else random.uniform(2, 3)
+		self.faction = faction if faction is not None else factionList[random.randint(0, 2)]
 		self.color = color 
+		
+		#TODO: can we store what the ant's been doing and base future actions on that?
+		self.stateHistory = deque()
 
 		if not color: 
 			self.setColor()
@@ -104,6 +105,13 @@ class Ant:
 		moveVect = self.normalize([x, y])
 		x = moveVect[0]
 		y = moveVect[1]
+		testXPos = self.xPos + x * self.speed * seconds
+		testYPos = self.yPos + y * self.speed * seconds
+		#test to see if the move is valid, and return the closest valid move vector
+		checkedMoveVect = self.checkMove(testXPos, testYPos, map, seconds)
+		#x = checkedMoveVect[0]
+		#y = checkedMoveVect[1]
+		
 		self.xPos += x * self.speed * seconds
 		if(self.xPos < 0):
 			self.xPos = 0
@@ -115,6 +123,26 @@ class Ant:
 		if(self.yPos > GAME_HEIGHT - 1):
 			self.yPos = GAME_HEIGHT - 1
 		map.addAnt(self.xPos, self.yPos, self)
+		
+	def checkMove(self, testXPos, testYPos, map, seconds):
+		if(testXPos < 0):
+			testXPos = 0
+		elif(testXPos > (GAME_WIDTH - 1)):
+			testXPos = GAME_WIDTH - 1
+		if(testYPos < 0):
+			testYPos = 0
+		elif(testYPos > GAME_HEIGHT - 1):
+			testYPos = GAME_HEIGHT - 1
+		if(map.dirtAt(testXPos, testYPos)):
+			self.justHitAWall = True
+			self.digTarget = map.dirtAt(testXPos, testYPos)
+			testXPos = 0
+			testYPos = 0
+		else:
+			self.justHitAWall = False
+			self.digTarget = None
+		return (testXPos, testYPos)
+		
 		
 	def getSign(self, x):
 		if (x > 0):
@@ -132,8 +160,13 @@ class Ant:
 				self.antToAttack = None
 		
 	def attackMove(self, map, seconds):
-		map.removeAnt(self.xPos, self.yPos, self)
+		#map.removeAnt(self.xPos, self.yPos, self)
 		
+		xDir = self.antToAttack.xPos - self.xPos
+		yDir = self.antToAttack.yPos - self.yPos
+		self.move(xDir, yDir, map, seconds)
+		
+		'''
 		#handle new X coordinate position
 		originalXSign = self.getSign(self.antToAttack.xPos - self.xPos)
 		self.xPos += self.getSign(self.antToAttack.xPos - self.xPos) * self.speed * seconds
@@ -159,8 +192,8 @@ class Ant:
 			self.yPos = 0
 		if(self.yPos > (GAME_HEIGHT - 1)):
 			self.yPos = GAME_HEIGHT - 1
-			
-		map.addAnt(self.xPos, self.yPos, self)
+		'''
+		#map.addAnt(self.xPos, self.yPos, self)
 		
 	def eat(self, seconds):
 		if(self.foodSource.quantity <= 0):
@@ -174,8 +207,13 @@ class Ant:
 			self.dmg += seconds * plusMod * .2
 
 	def eatMove(self, map, seconds):
-		map.removeAnt(self.xPos, self.yPos, self)
+		#map.removeAnt(self.xPos, self.yPos, self)
 		
+		xDir = self.foodSource.xPos - self.xPos
+		yDir = self.foodSource.yPos - self.yPos
+		self.move(xDir, yDir, map, seconds)
+		
+		'''
 		#handle new X coordinate position
 		originalXSign = self.getSign(self.foodSource.xPos - self.xPos)
 		self.xPos += self.getSign(self.foodSource.xPos - self.xPos) * self.speed * seconds
@@ -201,8 +239,8 @@ class Ant:
 			self.yPos = 0
 		if(self.yPos > (GAME_HEIGHT - 1)):
 			self.yPos = GAME_HEIGHT - 1
-			
-		map.addAnt(self.xPos, self.yPos, self)
+		'''
+		#map.addAnt(self.xPos, self.yPos, self)
 		
 	def flee(self, map, seconds):
 		#map[int(self.xPos)][int(self.yPos)].remove(self)
@@ -213,8 +251,8 @@ class Ant:
 			yTotal += enemy.yPos
 		xAvg = xTotal / len(self.hostileSurroundings)
 		yAvg = yTotal / len(self.hostileSurroundings)
-		xMoveDir = self.getSign(self.xPos - xAvg)
-		yMoveDir = self.getSign(self.yPos - xAvg)
+		xMoveDir = self.xPos - xAvg
+		yMoveDir = self.yPos - yAvg
 		
 		self.move(xMoveDir, yMoveDir, map, seconds)
 		'''
@@ -250,12 +288,12 @@ class Ant:
 					for entity in map[row][column].getOccupants():
 						if(entity.type is "ant"):
 							if(entity.faction is self.faction):
-								if(len(self.friendlySurroundings) > 50):
+								if(len(self.friendlySurroundings) > 5):
 								#ants, having poor memories, can only recognize up to 5 nearby comrades
 									break
 								self.friendlySurroundings.append(entity)
 							else:
-								if(len(self.hostileSurroundings) > 50):
+								if(len(self.hostileSurroundings) > 5):
 								#ants, having poor memories, can only recognize up to 5 nearby enemies
 									break
 								self.hostileSurroundings.append(entity)
@@ -266,18 +304,24 @@ class Ant:
 							self.foodSurroundings.append(entity)
 			
 	def decide(self):
-
+	# based on what we've learned from checkSurroundings, plan the ants next move by transitioning them to the appropriate state
 		if(len(self.hostileSurroundings) is not 0):
 		#first priority is enemy ants in the vicinity
-			if(self.health < 5):
+			if(self.health < 3):
 			#low hp = flee
 				self.state = "flee"
 			if(len(self.hostileSurroundings) <= len(self.friendlySurroundings) + 1):
 			#engage if it's at least a roughly proportional fight
 				if self.antToAttack not in self.hostileSurroundings:
 					#if the ant we were attacking has left our hostileSurroundings, find a new ant to attack
-					self.antToAttack = self.hostileSurroundings[random.randint(0, (len(self.hostileSurroundings) - 1))]
-				#if(abs(self.xPos - self.antToAttack.xPos) <= 6) and (abs(self.yPos - self.antToAttack.yPos) <= 6):
+					#choose the closest ant to attack
+					antDistance = 1000
+					for ant in self.hostileSurroundings:
+						if(self.distanceTo(ant) < antDistance):
+							self.antToAttack = ant
+							antDistance = self.distanceTo(ant)
+						
+					#self.antToAttack = self.hostileSurroundings[random.randint(0, (len(self.hostileSurroundings) - 1))]
 				if(self.distanceTo(self.antToAttack) <= 5):
 					#ant in range
 					self.state = "attack"
@@ -307,18 +351,30 @@ class Ant:
 			
 
 	def act(self, map, seconds):
+		if(len(self.stateHistory) > 5):
+			self.stateHistory.popleft()
 		if(self.state is "attack"):
+			self.stateHistory.append("attack")
 			self.attack(self.antToAttack, seconds)
 		elif(self.state is "attackMove"):
+			self.stateHistory.append("attackMove")
 			self.attackMove(map, seconds)
 		elif(self.state is "eat"):
+			self.stateHistory.append("eat")
 			self.eat(seconds)
 		elif(self.state is "eatMove"):
+			self.stateHistory.append("eatMove")
 			self.eatMove(map, seconds)
 		elif(self.state is "flee"):
+			self.stateHistory.append("flee")
 			self.flee(map, seconds)
 		elif(self.state is "wander"):
-			self.move(random.randint(-1, 1), random.randint(-1, 1), map, seconds)
+			if(self.digTarget is not None):
+				self.stateHistory.append("dig")
+				self.dig(map, seconds)
+			else:
+				self.stateHistory.append("wander")
+				self.move(random.randint(-1, 1), random.randint(-1, 1), map, seconds)
     
     
 '''what if the color is randomly assigned and the closer an ant is to another ant's color, the friendlier they are '''
