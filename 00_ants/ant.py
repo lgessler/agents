@@ -278,7 +278,7 @@ class Ant:
     def checkSurroundings(self, map):
 
         # used in for loop below
-        def checkOccupant(self, entity):
+        def checkOccupant(entity):
             if(entity.type is "ant"):
                 if(entity.faction is self.faction):
                     if(len(self.friendlySurroundings) < 5):
@@ -306,7 +306,7 @@ class Ant:
         for row in range(minCheckX, maxCheckX):
             for column in range(minCheckY, maxCheckY):
                 for entity in map[row][column].getOccupants():
-                    self.checkOccupant(entity)
+                    checkOccupant(entity)
 
             
     def decide(self):
