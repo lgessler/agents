@@ -276,7 +276,25 @@ class Ant:
         #map[int(self.xPos)][int(self.yPos)].append(self)
 
     def checkSurroundings(self, map):
-        #update hostilesurroundings and friendlysurroundings based on nearby ants on the map
+
+        # used in for loop below
+        def checkOccupant(self, entity):
+            if(entity.type is "ant"):
+                if(entity.faction is self.faction):
+                    if(len(self.friendlySurroundings) < 5):
+                    # ants, having poor memories, can only recognize up to 5 nearby comrades
+                        self.friendlySurroundings.append(entity)
+                else:
+                    if(len(self.hostileSurroundings) < 5):
+                    # ants, having poor memories, can only recognize up to 5 nearby enemies
+                        self.hostileSurroundings.append(entity)
+                    
+            if(entity.type is "food"):
+                if(len(self.foodSurroundings) < 5):
+                    self.foodSurroundings.append(entity)
+
+
+        # update hostilesurroundings and friendlysurroundings based on nearby ants on the map
         self.friendlySurroundings[:] = []
         self.hostileSurroundings[:] = []
         self.foodSurroundings[:] = []
@@ -290,24 +308,10 @@ class Ant:
                 for entity in map[row][column].getOccupants():
                     self.checkOccupant(entity)
 
-    def checkOccupant(self, entity):
-        if(entity.type is "ant"):
-            if(entity.faction is self.faction):
-                if(len(self.friendlySurroundings) < 5):
-                # ants, having poor memories, can only recognize up to 5 nearby comrades
-                    self.friendlySurroundings.append(entity)
-            else:
-                if(len(self.hostileSurroundings) < 5):
-                # ants, having poor memories, can only recognize up to 5 nearby enemies
-                    self.hostileSurroundings.append(entity)
-                
-        if(entity.type is "food"):
-            if(len(self.foodSurroundings) < 5):
-                self.foodSurroundings.append(entity)
-
             
     def decide(self):
-    # based on what we've learned from checkSurroundings, plan the ants next move by transitioning them to the appropriate state
+    # based on what we've learned from checkSurroundings, plan the ants next move by 
+    # transitioning them to the appropriate state
         if(len(self.hostileSurroundings) is not 0):
         #first priority is enemy ants in the vicinity
             if(self.health < 3):
@@ -316,7 +320,8 @@ class Ant:
             if(len(self.hostileSurroundings) <= len(self.friendlySurroundings) + 1):
             #engage if it's at least a roughly proportional fight
                 if self.antToAttack not in self.hostileSurroundings:
-                    #if the ant we were attacking has left our hostileSurroundings, find a new ant to attack
+                    #if the ant we were attacking has left our hostileSurroundings, 
+                    # find a new ant to attack
                     #choose the closest ant to attack
                     antDistance = 1000
                     for ant in self.hostileSurroundings:
