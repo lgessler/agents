@@ -149,9 +149,9 @@ def check_events():
 				spawnDirt = True
 			if(event.key is pygame.K_r):
 				spawnRAnts = True
-			if(event.key is pygame.K_g):
-				spawnBAnts = True
 			if(event.key is pygame.K_b):
+				spawnBAnts = True
+			if(event.key is pygame.K_g):
 				spawnGAnts = True
 		elif(event.type is pygame.KEYUP):
 			if(event.key is pygame.K_d):
