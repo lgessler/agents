@@ -15,6 +15,7 @@ foodCheckRadius = 150
 
 GAME_WIDTH = 600
 GAME_HEIGHT = 600
+MEMORY_CAPACITY = 5
 
 class Ant:
     def __init__(self, xPos=None, yPos=None, health=None, dmg=None, speed=None, 
@@ -281,16 +282,16 @@ class Ant:
         def checkOccupant(entity):
             if(entity.type is "ant"):
                 if(entity.faction is self.faction):
-                    if(len(self.friendlySurroundings) < 5):
+                    if(len(self.friendlySurroundings) < MEMORY_CAPACITY):
                     # ants, having poor memories, can only recognize up to 5 nearby comrades
                         self.friendlySurroundings.append(entity)
                 else:
-                    if(len(self.hostileSurroundings) < 5):
+                    if(len(self.hostileSurroundings) < MEMORY_CAPACITY):
                     # ants, having poor memories, can only recognize up to 5 nearby enemies
                         self.hostileSurroundings.append(entity)
                     
             if(entity.type is "food"):
-                if(len(self.foodSurroundings) < 5):
+                if(len(self.foodSurroundings) < MEMORY_CAPACITY):
                     self.foodSurroundings.append(entity)
 
 
