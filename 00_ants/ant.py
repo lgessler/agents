@@ -299,15 +299,17 @@ class Ant:
         self.friendlySurroundings[:] = []
         self.hostileSurroundings[:] = []
         self.foodSurroundings[:] = []
-        minCheckX = max(0, int(self.xPos) - enemyCheckRadius)
-        maxCheckX = min(GAME_WIDTH - 1, int(self.xPos) + enemyCheckRadius)
-        minCheckY = max(0, int(self.yPos) - enemyCheckRadius)
-        maxCheckY = min(GAME_HEIGHT - 1, int(self.yPos) + enemyCheckRadius)
-
-        for row in range(minCheckX, maxCheckX):
-            for column in range(minCheckY, maxCheckY):
-                for entity in map[row][column].getOccupants():
-                    checkOccupant(entity)
+#        minCheckX = max(0, int(self.xPos) - enemyCheckRadius)
+#        maxCheckX = min(GAME_WIDTH - 1, int(self.xPos) + enemyCheckRadius)
+#        minCheckY = max(0, int(self.yPos) - enemyCheckRadius)
+#        maxCheckY = min(GAME_HEIGHT - 1, int(self.yPos) + enemyCheckRadius)
+#
+#        for row in range(minCheckX, maxCheckX):
+#            for column in range(minCheckY, maxCheckY):
+#                for entity in map[row][column].getOccupants():
+#                    checkOccupant(entity)
+        for entity in map.findOccupants(self.xPos, self.yPos, enemyCheckRadius):
+            checkOccupant(entity)
 
             
     def decide(self):

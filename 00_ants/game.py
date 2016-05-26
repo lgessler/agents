@@ -211,6 +211,7 @@ def update_logic(seconds):
     spawnGreenAnts()
     spawnMouseFood()
     spawnMouseDirt()
+    map.buildQtree()
     for ant in antList:
         ant.checkSurroundings(map)
         ant.decide()

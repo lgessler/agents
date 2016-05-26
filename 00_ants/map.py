@@ -1,5 +1,6 @@
 from tile import Tile
 from dirt import Dirt
+import pyqtree as qt
 
 class Map:
     def __init__(self, rows, columns):
@@ -54,3 +55,30 @@ class Map:
                 return digTarget
             else:
                 return None
+
+    def getOccupants(self):
+        """ Get all occupants by brute force as a 3-tuple of value, row, and
+        col. """
+        occs = []
+        for row in range(len(self.map)):
+            for col in range(len(self.map[0])):
+                for entity in self.map[row][col].getOccupants():
+                    occs.append((entity, row, col))
+        return occs
+
+    def buildQtree(self):
+        """ Called inside the rendering loop to construct a quad tree for efficient 
+        lookup of nearest neighbors
+        """
+        self.qtree = qt.Index(bbox=[0,0,600,600])
+        for occ, row, col in self.getOccupants():
+            self.qtree.insert(item=occ, bbox=[row,col,row,col])
+
+    def findOccupants(self, x, y, r):
+        """ Given an (x, y) coordinate and a radius, find all occupants within the
+        radius 
+        """
+        return self.qtree.intersect( (x-r,y-r,x+r,y+r) )
+
+
+
