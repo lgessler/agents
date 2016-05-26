@@ -5,17 +5,20 @@ from map import Map
 factionList = ["red", "blue", "green"]
 stateList = ["attack", "attackMove", "wander", "eat", "eatMove"]
 
-#this controls the length/width of the square used by each ant to check for enemies and friends around it
+# this controls the length/width of the square used by each ant to check for enemies 
+# and friends around it
 enemyCheckRadius = 50
 
-#this controls the length/width of the square used by each ant to check for enemies and friends around it
+# this controls the length/width of the square used by each ant to check for enemies 
+# and friends around it
 foodCheckRadius = 150
 
 GAME_WIDTH = 600
 GAME_HEIGHT = 600
 
 class Ant:
-    def __init__(self, xPos=None, yPos=None, health=None, dmg=None, speed=None, digSpeed=None, faction=None, color=None):
+    def __init__(self, xPos=None, yPos=None, health=None, dmg=None, speed=None, 
+            digSpeed=None, faction=None, color=None):
         self.type = "ant"
 
         self.friendlySurroundings = []
@@ -284,24 +287,24 @@ class Ant:
 
         for row in range(minCheckX, maxCheckX):
             for column in range(minCheckY, maxCheckY):
-                if(len((map[row][column]).getOccupants()) != 0):
-                    for entity in map[row][column].getOccupants():
-                        if(entity.type is "ant"):
-                            if(entity.faction is self.faction):
-                                if(len(self.friendlySurroundings) > 5):
-                                #ants, having poor memories, can only recognize up to 5 nearby comrades
-                                    break
-                                self.friendlySurroundings.append(entity)
-                            else:
-                                if(len(self.hostileSurroundings) > 5):
-                                #ants, having poor memories, can only recognize up to 5 nearby enemies
-                                    break
-                                self.hostileSurroundings.append(entity)
-                                
-                        if(entity.type is "food"):
-                            if(len(self.foodSurroundings) > 5):
-                                break
-                            self.foodSurroundings.append(entity)
+                for entity in map[row][column].getOccupants():
+                    self.checkOccupant(entity)
+
+    def checkOccupant(self, entity):
+        if(entity.type is "ant"):
+            if(entity.faction is self.faction):
+                if(len(self.friendlySurroundings) < 5):
+                # ants, having poor memories, can only recognize up to 5 nearby comrades
+                    self.friendlySurroundings.append(entity)
+            else:
+                if(len(self.hostileSurroundings) < 5):
+                # ants, having poor memories, can only recognize up to 5 nearby enemies
+                    self.hostileSurroundings.append(entity)
+                
+        if(entity.type is "food"):
+            if(len(self.foodSurroundings) < 5):
+                self.foodSurroundings.append(entity)
+
             
     def decide(self):
     # based on what we've learned from checkSurroundings, plan the ants next move by transitioning them to the appropriate state
