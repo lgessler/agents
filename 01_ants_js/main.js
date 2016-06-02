@@ -1,26 +1,45 @@
-
 window.onload = function() {
 
-  var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create });
+var map, layer, cursors;
 
-  function preload () {
+function preload() {
+  game.load.tilemap('map', 'assets/map.json', null, Phaser.Tilemap.TILED_JSON);
+};
 
-    game.load.image('logo', 'assets/phaser.png');
+function create() {
+  map = game.add.tilemap('map', 16, 16);
+  layer = map.createLayer(0);
+  layer.resizeWorld();
+  cursors = game.input.keyboard.createCursorKeys();
 
+  var help = game.add.text(16, 16, 'Arrows to scroll', 
+      { font: '14px Arial', fill: '#ffffff' });
+  help.fixedToCamera = true;
+};
+
+function update() {
+  if (cursors.left.isDown) {
+    game.camera.x -= 4;
+  } 
+  else if (cursors.right.isDown) {
+    game.camera.x += 4;
   }
-
-  function create () {
-
-    // stopped here:
-    // http://phaser.io/tutorials/making-your-first-phaser-game/part3
-    var logo = game.add.sprite(game.world.centerX, game.world.centerY, 'logo');
-    logo.anchor.setTo(0.5, 0.5);
-
+  if (cursors.up.isDown) {
+    game.camera.y -= 4;
+  } 
+  else if (cursors.down.isDown) {
+    game.camera.y += 4;
   }
+};
 
-  function update () {
+function render() {
 
-  }
+};
+
+var game = new Phaser.Game(800, 640, Phaser.AUTO, 'ants',
+    { preload: preload, create: create, update: update, render: render });
+
+
 
 };
 
