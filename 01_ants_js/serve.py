@@ -1,12 +1,10 @@
 #!/usr/bin/python
-import SimpleHTTPServer
-import SocketServer
+import http.server
 
-PORT = 8000
+def start_server(port=8000, bind="", cgi=False):
+    if cgi==True:
+        http.server.test(HandlerClass=http.server.CGIHTTPRequestHandler, port=port, bind=bind)
+    else:
+        http.server.test(HandlerClass=http.server.SimpleHTTPRequestHandler,port=port,bind=bind)
 
-Handler = SimpleHTTPServer.SimpleHTTPRequestHandler
-
-httpd = SocketServer.TCPServer(("", PORT), Handler)
-
-print("serving at port", PORT)
-httpd.serve_forever()
+start_server()
