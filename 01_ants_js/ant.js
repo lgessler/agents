@@ -48,7 +48,7 @@ Ant.prototype.setColor() {
   //ensure that color of ant matches RGB faction. Unnecessary probably
   if(faction == "red") {
     color = [randint(0, 75) + 170, 0, 0];
-    
+  }
   if(faction == "green") {
     color = [0, randint(0, 75) + 170, 0];
   }
@@ -75,6 +75,13 @@ Ant.prototype.normalize(vector) {
 };
 
 Ant.prototype.dig() {
+  digTarget.amount -= digSpeed * (1/60);
+  if(digTarget.amount <= 0){
+    digList.remove(digTarget);
+    digTarget.sprite.kill();
+    kill(digTarget);
+    digTarget = null;
+  }
   
 };
 
@@ -91,6 +98,8 @@ Ant.prototype.move(moveVector) {
   if(position[1] > GAME_HEIGHT - 1)
     position[1] = GAME_HEIGHT - 1;
   
+  sprite.x = position[0]
+  sprite.y = position[1]
 };
 
 Ant.prototype.attack(target) {
@@ -100,6 +109,7 @@ Ant.prototype.attack(target) {
     health += target.health / 2;
     damage += 1;
     hostileSurroundings.remove(target);
+    target.sprite = null;
     antToAttack = null;
   }
 };
@@ -126,40 +136,3 @@ Ant.prototype.eatMove() {
                 foodSource.position[1] - position[1]];
   move(moveVector);
 }
-  
-
-        self.friendlySurroundings = []
-        self.hostileSurroundings = []
-        self.foodSurroundings = []
-        self.state = "wander"
-        self.antToAttack = None
-        self.squad = None
-        self.foodSource = None
-        self.digTarget = None
-        
-        self.xPos = xPos if xPos is not None else random.randint(0, GAME_WIDTH - 1)
-        self.yPos = yPos if yPos is not None else random.randint(0, GAME_HEIGHT - 1)
-        self.health = health if health is not None else random.uniform(5, 40)
-        self.dmg = dmg if dmg is not None else random.uniform(2, 6)
-        self.speed = speed if speed is not None else random.uniform(20, 35)
-        self.digSpeed = digSpeed if digSpeed is not None else random.uniform(2, 3)
-        self.faction = faction if faction is not None else factionList[random.randint(0, 2)]
-        self.color = color 
-        
-        #TODO: can we store what the ant's been doing and base future actions on that?
-        self.stateHistory = deque()
-
-        if not color: 
-            self.setColor()
-  
-  
-  x: 1,
-  y: 2,
-  name: "hello"
-};
-
-// OR
-
-//Ant.prototype.x = 1;
-//Ant.prototype.y = 2;
-//Ant.prototype.name = "hello";
