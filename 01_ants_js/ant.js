@@ -1,13 +1,13 @@
 // constructor
 var Ant = function(name, position, health, damage, moveSpeed, digSpeed, faction, color, sprite) {
-  this.name = name;
-  this.position = position;
-  this.health = health;
-  this.damage = damage;
-  this.moveSpeed = moveSpeed;
-  this.digSpeed = digSpeed;
-  this.faction = faction;
-  this.color = color;
+  if (this.name !== undefined) this.name = name;
+  if (this.position !== undefined) this.position = position;
+  if (this.health !== undefined) this.health = health;
+  if (this.damage !== undefined) this.damage = damage;
+  if (this.moveSpeed !== undefined) this.moveSpeed = moveSpeed;
+  if (this.digSpeed !== undefined) this.digSpeed = digSpeed;
+  if (this.faction !== undefined) this.faction = faction;
+  if (this.color !== undefined) this.color = color;
   
   //assign sprite and sprite position
   this.sprite = sprite;
@@ -24,13 +24,13 @@ var Ant = function(name, position, health, damage, moveSpeed, digSpeed, faction,
 };
 
 Ant.prototype = {
-  name: "ant",
+  name: (name !== undefined) ? name : (Math.random() < .5) : "Antonius" : "Antonia",
   position: [randint(0, GAME_HEIGHT), randint(0, GAME_WIDTH)],
   state: "wander",
-  health: random(5, 40),
-  damage: random(2, 6)),
-  moveSpeed: random(20, 35),
-  digSpeed: random(2, 3),
+  health: randint(5, 40),
+  damage: randint(2, 6)),
+  moveSpeed: randint(20, 35),
+  digSpeed: randint(2, 3),
   faction = randint(0, FACTION.NUM),
   color = FACTION.COLOR[faction]
 };
