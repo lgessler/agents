@@ -1,36 +1,36 @@
 // constructor
 var Ant = function(name, position, health, damage, moveSpeed, digSpeed, faction, color, sprite) {
-  this.name = (name !== undefined) ? name : ((Math.random() < .5) ? "Antonius" : "Antonia");
-  this.position = position;
-  this.health = (health !== undefined) ? health : randint(5, 40);
-  this.damage = (damage !== undefined) ? damage : randint(2, 6);
-  this.moveSpeed = (moveSpeed !== undefined) ? moveSpeed : randint(20, 35);
-  this.digSpeed = (digSpeed !== undefined) ? digSpeed : randint(2, 3);
-  this.faction = (faction !== undefined) ? faction : randint(0, FACTION.NUM);
-  this.color = (color !== undefined) ? color : FACTION.COLOR[this.faction];
+  if (this.name !== undefined) this.name = name;
+  if (this.position !== undefined) this.position = position;
+  if (this.health !== undefined) this.health = health;
+  if (this.damage !== undefined) this.damage = damage;
+  if (this.moveSpeed !== undefined) this.moveSpeed = moveSpeed;
+  if (this.digSpeed !== undefined) this.digSpeed = digSpeed;
+  if (this.faction !== undefined) this.faction = faction;
+  if (this.color !== undefined) this.color = color;
   
   //assign sprite and sprite position
   this.sprite = sprite;
-  this.sprite.x = position[0];
-  this.sprite.y = position[1];
+  this.sprite.x = position[0]
+  this.sprite.y = position[1]
   
-  this.friendlySurroundings = [];
-  this.hostileSurroundings = [];
-  this.state = "wander";
-  this.antToAttack = null;
-  this.squad = null;
-  this.foodSource = null;
-  this.digTarget = null;
+  this.friendlySurroundings = []
+  this.hostileSurroundings = []
+  this.state = "wander"
+  this.antToAttack = null
+  this.squad = None
+  this.foodSource = None
+  this.digTarget = None
 };
 
 Ant.prototype = {
-  name: "ant",
+  name: (name !== undefined) ? name : (Math.random() < .5) : "Antonius" : "Antonia",
   position: [randint(0, GAME_HEIGHT), randint(0, GAME_WIDTH)],
   state: "wander",
-  health: random(5, 40),
-  damage: random(2, 6)),
-  moveSpeed: random(20, 35),
-  digSpeed: random(2, 3),
+  health: randint(5, 40),
+  damage: randint(2, 6)),
+  moveSpeed: randint(20, 35),
+  digSpeed: randint(2, 3),
   faction = randint(0, FACTION.NUM),
   color = FACTION.COLOR[faction]
 };
