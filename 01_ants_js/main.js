@@ -3,12 +3,13 @@ window.onload = function() {
 // Globals
 var antList;
 var foodList;
+var coarseMap;
 
 /********************
  * Phaser functions *
  ********************/
 function preload() {
-  game.load.image('ant', 'assets/brick.png');
+  game.load.image('ant', 'assets/ant.png');
 }
 
 function create() {

@@ -1,5 +1,6 @@
 // constructor
 var Ant = function(name, position, health, damage, moveSpeed, digSpeed, faction, color, sprite) {
+  this._id = get_id();
   if (this.name !== undefined) this.name = name;
   if (this.position !== undefined) this.position = position;
   if (this.health !== undefined) this.health = health;
@@ -21,6 +22,7 @@ var Ant = function(name, position, health, damage, moveSpeed, digSpeed, faction,
   this.squad = null; 
   this.foodSource = null; 
   this.digTarget = null; 
+
 };
 
 Ant.prototype = {
@@ -37,8 +39,9 @@ Ant.prototype = {
 
 Ant.prototype.distanceTo = function(entity) {
   //return Manhattan distance between this and another entity
-  if(entity === null)
+  if(entity === null) {
     return POSITIVE_INFINITY;
+  }
   xDistance = abs(position[0] - entity.position[0]);
   yDistance = abs(position[1] - entity.position[1]);
   return xDistance + yDistance;
@@ -62,7 +65,7 @@ Ant.prototype.normalize = function(vector) {
 
 Ant.prototype.dig = function() {
   digTarget.amount -= digSpeed * (1/60);
-  if(digTarget.amount <= 0){
+  if (digTarget.amount <= 0) {
     digList.remove(digTarget);
     digTarget.sprite.kill();
     kill(digTarget);

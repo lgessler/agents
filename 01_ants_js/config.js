@@ -1,6 +1,4 @@
-GAME_WIDTH = 800;
-GAME_HEIGHT = 640;
-
+// Game logic
 FACTION = {
   NUM: 3,
   COLORS: {
@@ -12,3 +10,10 @@ FACTION = {
 
 
 INIT_NUM_OF_ANTS = 12;
+
+
+// Technical aspects
+GAME_WIDTH = 800;
+GAME_HEIGHT = 640;
+
+COARSE_MAP_EDGE_SIZE = 32;
