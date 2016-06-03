@@ -7,7 +7,7 @@ var Ant = function(name, position, health, damage, moveSpeed, digSpeed, faction,
   if (this.moveSpeed !== undefined) this.moveSpeed = moveSpeed;
   if (this.digSpeed !== undefined) this.digSpeed = digSpeed;
   if (this.faction !== undefined) this.faction = faction;
-  if (this.color !== undefined) this.color = color;
+  this.color = FACTION.COLOR[this.faction];
   
   //assign sprite and sprite position
   this.sprite = sprite;
@@ -28,14 +28,14 @@ Ant.prototype = {
   position: [randint(0, GAME_HEIGHT), randint(0, GAME_WIDTH)],
   state: "wander",
   health: randint(5, 40),
-  damage: randint(2, 6)),
+  damage: randint(2, 6),
   moveSpeed: randint(20, 35),
   digSpeed: randint(2, 3),
-  faction = randint(0, FACTION.NUM),
-  color = FACTION.COLOR[faction]
+  faction: randint(0, FACTION.NUM),
+  color: undefined // set this later
 };
 
-Ant.prototype.distanceTo(entity) {
+Ant.prototype.distanceTo = function(entity) {
   //return Manhattan distance between this and another entity
   if(entity === null)
     return POSITIVE_INFINITY;
@@ -44,7 +44,7 @@ Ant.prototype.distanceTo(entity) {
   return xDistance + yDistance;
 };
 
-Ant.prototype.setColor() {
+Ant.prototype.setColor = function() {
   //ensure that color of ant matches RGB faction. Unnecessary probably
   if(faction == "red") {
     color = [randint(0, 75) + 170, 0, 0];
@@ -58,12 +58,12 @@ Ant.prototype.setColor() {
   }
 };
   
-Ant.prototype.setPos(position) {
+Ant.prototype.setPos = function(position) {
   //need to update map accordingly
   position = position;
 };
 
-Ant.prototype.normalize(vector) {
+Ant.prototype.normalize = function(vector) {
   //normalize vector to unit length
   lengthSquared = vector[0] * vector[0] + vector[1] * vector[1];
   if(lengthSquared != 0) {
@@ -74,11 +74,11 @@ Ant.prototype.normalize(vector) {
   return vector
 };
 
-Ant.prototype.dig() {
+Ant.prototype.dig = function() {
   
 };
 
-Ant.prototype.move(moveVector) {
+Ant.prototype.move = function(moveVector) {
   moveVector = normalize(moveVector);
   position += moveVector * speed;
   
@@ -93,7 +93,7 @@ Ant.prototype.move(moveVector) {
   
 };
 
-Ant.prototype.attack(target) {
+Ant.prototype.attack = function(target) {
   //attack a target
   target.health -= damage;
   if(target.health <= 0) {
@@ -104,13 +104,13 @@ Ant.prototype.attack(target) {
   }
 };
 
-Ant.prototype.attackMove() {
+Ant.prototype.attackMove = function() {
   moveVector = [antToAttack.position[0] - position[0], 
                 antToAttack.position[1] - position[1]];
   move(moveVector);
 };
 
-Ant.prototype.eat() {
+Ant.prototype.eat = function() {
   if(foodSource.quantity <= 0) {
     foodSurroundings.remove(foodSource);
     foodSource = null;
@@ -121,13 +121,13 @@ Ant.prototype.eat() {
   }
 };
   
-Ant.prototype.eatMove() {
+Ant.prototype.eatMove = function() {
   moveVector = [foodSource.position[0] - position[0],
                 foodSource.position[1] - position[1]];
   move(moveVector);
 }
   
-
+/*
         self.friendlySurroundings = []
         self.hostileSurroundings = []
         self.foodSurroundings = []
@@ -152,12 +152,8 @@ Ant.prototype.eatMove() {
         if not color: 
             self.setColor()
   
-  
-  x: 1,
-  y: 2,
-  name: "hello"
+*/
 };
-
 // OR
 
 //Ant.prototype.x = 1;
