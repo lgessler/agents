@@ -44,20 +44,6 @@ Ant.prototype.distanceTo = function(entity) {
   return xDistance + yDistance;
 };
 
-Ant.prototype.setColor = function() {
-  //ensure that color of ant matches RGB faction. Unnecessary probably
-  if(faction == "red") {
-    color = [randint(0, 75) + 170, 0, 0];
-  }
-  if(faction == "green") {
-    color = [0, randint(0, 75) + 170, 0];
-  }
-  
-  if(faction == "blue") {
-    color = [0, 0, randint(0, 75) + 170];
-  }
-};
-  
 Ant.prototype.setPos = function(position) {
   //need to update map accordingly
   position = position;
@@ -88,27 +74,31 @@ Ant.prototype.move = function(moveVector) {
   moveVector = normalize(moveVector);
   position += moveVector * speed;
   
-  if(position[0] < 0)
+  if (position[0] < 0) {
     position[0] = 0;
-  if(position[0] > GAME_WIDTH - 1)
+  }
+  else if (position[0] > GAME_WIDTH - 1) {
     position[0] = GAME_WIDTH - 1;
-  if(position[1] < 0)
+  }
+  if (position[1] < 0) {
     position[1] = 0;
-  if(position[1] > GAME_HEIGHT - 1)
+  }
+  else if (position[1] > GAME_HEIGHT - 1) {
     position[1] = GAME_HEIGHT - 1;
+  }
   
-  sprite.x = position[0]
-  sprite.y = position[1]
+  sprite.x = position[0];
+  sprite.y = position[1];
 };
 
 Ant.prototype.attack = function(target) {
   //attack a target
   target.health -= damage;
-  if(target.health <= 0) {
+  if (target.health <= 0) {
     health += target.health / 2;
     damage += 1;
     hostileSurroundings.remove(target);
-    target.sprite = null;
+    target.sprite.kill();
     antToAttack = null;
   }
 };
@@ -123,15 +113,47 @@ Ant.prototype.eat = function() {
   if(foodSource.quantity <= 0) {
     foodSurroundings.remove(foodSource);
     foodSource = null;
-  } else {
+  } 
+  else {
     foodSource.quantity -= (1/60);
     health += (1/60) * foodSource.quality;
     damage += (1/60) * foodSource.quality * .2;
   }
 };
 
-Ant.prototype.eatMove() = function(){
+Ant.prototype.eatMove = function() {
   moveVector = [foodSource.position[0] - position[0],
                 foodSource.position[1] - position[1]];
   move(moveVector);
-}
+};
+
+Ant.prototype.flee = function() {
+  var xTotal = 0, yTotal = 0, 
+    xAvg, yAvg, xMoveDir, yMoveDir;
+
+  this.hostileSurroundings.forEach(function(enemy) {
+    xTotal += enemy.xPos;
+    yTotal += enemy.yPos;
+  });
+
+  xAvg = xTotal / this.hostileSurroundings.length;
+  yAvg = yTotal / this.hostileSurroundings.length;
+
+  xMoveDir = this.xPos - xAvg;
+  yMoveDir = this.yPos - yAvg;
+
+  this.move([xMoveDir, yMoveDir]);
+};
+
+Ant.prototype.checkSurroundings = function() {
+  // need to finish coarse map for this
+};
+
+Ant.prototype.decide = function() {
+
+};
+
+Ant.prototype.act = function() {
+
+};
+
