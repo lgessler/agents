@@ -17,13 +17,21 @@ function create() {
   spawnInitAnts(INIT_NUM_OF_ANTS);
   //spawnInitFood()
   //spawnInitDirt()
+  
+  // register input event handlers
+  for (var i = 0; i < Math.min(10, FACTION.NUM); i++) {
+    var key = game.input.keyboard.addKey(Phaser.Keyboard[dig2eng[(i + 1) % 10]]);
+    // i'll explain this later
+    (function(i) {
+      key.onDown.add(function() {
+        spawnAnt(i, [game.input.x, game.input.y])
+      }, this);
+    })(i);
+  }
+
 }
 
 function update() {
-  spawnAnts();
-  //spawnFood();
-  //spawnDirt();
-
   antList.forEach(function(ant) {
     //ant.checkSurroundings();
     //ant.decide();
@@ -63,18 +71,6 @@ function spawnAnt(faction, loc) {
         undefined, undefined, undefined, faction, undefined, sprite));
 }
 
-function spawnAnts() {
-  if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
-    var faction = randint(0, FACTION.NUM);
-    spawnAnt(faction, [game.input.x, game.input.y]);
-  }
-  for (var i = 0; i < Math.min(10, FACTION.NUM); i++) {
-    var key = dig2eng[(i + 1) % 10];
-    if (eval("game.input.keyboard.isDown(Phaser.Keyboard." + key + ")")) {
-      spawnAnt(i, [game.input.x, game.input.y]);
-    }
-  }
-}
 
 
 };
