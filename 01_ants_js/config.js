@@ -10,3 +10,5 @@ FACTION = {
   }
 };
 
+
+INIT_NUM_OF_ANTS = 12;
