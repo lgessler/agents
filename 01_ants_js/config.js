@@ -1,5 +1,3 @@
-window.onload = function() {
-
 GAME_WIDTH = 800;
 GAME_HEIGHT = 640;
 
@@ -12,4 +10,3 @@ FACTION = {
   }
 };
 
-};
