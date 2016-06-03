@@ -74,7 +74,7 @@ Ant.prototype.normalize = function(vector) {
   return vector
 };
 
-Ant.prototype.dig() = function() {
+Ant.prototype.dig = function() {
   digTarget.amount -= digSpeed * (1/60);
   if(digTarget.amount <= 0){
     digList.remove(digTarget);
