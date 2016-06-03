@@ -24,7 +24,7 @@ var Ant = function(name, position, health, damage, moveSpeed, digSpeed, faction,
 };
 
 Ant.prototype = {
-  name: (name !== undefined) ? name : (Math.random() < .5) : "Antonius" : "Antonia",
+  name: (name !== undefined) ? name : (Math.random() < .5) ? "Antonius" : "Antonia",
   position: [randint(0, GAME_HEIGHT), randint(0, GAME_WIDTH)],
   state: "wander",
   health: randint(5, 40),
