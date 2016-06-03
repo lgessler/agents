@@ -7,20 +7,20 @@ var Ant = function(name, position, health, damage, moveSpeed, digSpeed, faction,
   if (this.moveSpeed !== undefined) this.moveSpeed = moveSpeed;
   if (this.digSpeed !== undefined) this.digSpeed = digSpeed;
   if (this.faction !== undefined) this.faction = faction;
-  this.color = FACTION.COLOR[this.faction];
+  this.color = FACTION.COLORS[this.faction];
   
   //assign sprite and sprite position
   this.sprite = sprite;
-  this.sprite.x = position[0]
-  this.sprite.y = position[1]
+  this.sprite.x = position[0];
+  this.sprite.y = position[1];
   
-  this.friendlySurroundings = []
-  this.hostileSurroundings = []
-  this.state = "wander"
-  this.antToAttack = null
-  this.squad = None
-  this.foodSource = None
-  this.digTarget = None
+  this.friendlySurroundings = [];
+  this.hostileSurroundings = [];
+  this.state = "wander";
+  this.antToAttack = null;
+  this.squad = null; 
+  this.foodSource = null; 
+  this.digTarget = null; 
 };
 
 Ant.prototype = {
