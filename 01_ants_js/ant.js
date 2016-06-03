@@ -1,26 +1,26 @@
 // constructor
 var Ant = function(name, position, health, damage, moveSpeed, digSpeed, faction, color, sprite) {
-  this.name = name;
+  this.name = (name !== undefined) ? name : ((Math.random() < .5) ? "Antonius" : "Antonia");
   this.position = position;
-  this.health = health;
-  this.damage = damage;
-  this.moveSpeed = moveSpeed;
-  this.digSpeed = digSpeed;
-  this.faction = faction;
-  this.color = color;
+  this.health = (health !== undefined) ? health : randint(5, 40);
+  this.damage = (damage !== undefined) ? damage : randint(2, 6);
+  this.moveSpeed = (moveSpeed !== undefined) ? moveSpeed : randint(20, 35);
+  this.digSpeed = (digSpeed !== undefined) ? digSpeed : randint(2, 3);
+  this.faction = (faction !== undefined) ? faction : randint(0, FACTION.NUM);
+  this.color = (color !== undefined) ? color : FACTION.COLOR[this.faction];
   
   //assign sprite and sprite position
   this.sprite = sprite;
-  this.sprite.x = position[0]
-  this.sprite.y = position[1]
+  this.sprite.x = position[0];
+  this.sprite.y = position[1];
   
-  this.friendlySurroundings = []
-  this.hostileSurroundings = []
-  this.state = "wander"
-  this.antToAttack = null
-  this.squad = None
-  this.foodSource = None
-  this.digTarget = None
+  this.friendlySurroundings = [];
+  this.hostileSurroundings = [];
+  this.state = "wander";
+  this.antToAttack = null;
+  this.squad = null;
+  this.foodSource = null;
+  this.digTarget = null;
 };
 
 Ant.prototype = {
