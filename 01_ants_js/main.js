@@ -68,7 +68,7 @@ function spawnAnts() {
     var faction = randint(0, FACTION.NUM);
     spawnAnt(faction, [game.input.x, game.input.y]);
   }
-  for (var i = 0; i < 10; i++) {
+  for (var i = 0; i < Math.min(10, FACTION.NUM); i++) {
     var key = dig2eng[(i + 1) % 10];
     if (eval("game.input.keyboard.isDown(Phaser.Keyboard." + key + ")")) {
       spawnAnt(i, [game.input.x, game.input.y]);
