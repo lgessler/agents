@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/local/bin/python3
 import http.server
 
 def start_server(port=8000, bind="", cgi=False):

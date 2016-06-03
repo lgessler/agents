@@ -7,7 +7,7 @@ var Ant = function(name, position, health, damage, moveSpeed, digSpeed, faction,
   if (this.moveSpeed !== undefined) this.moveSpeed = moveSpeed;
   if (this.digSpeed !== undefined) this.digSpeed = digSpeed;
   if (this.faction !== undefined) this.faction = faction;
-  if (this.color !== undefined) this.color = color;
+  this.color = FACTION.COLOR[this.faction];
   
   //assign sprite and sprite position
   this.sprite = sprite;
@@ -24,15 +24,15 @@ var Ant = function(name, position, health, damage, moveSpeed, digSpeed, faction,
 };
 
 Ant.prototype = {
-  name: (name !== undefined) ? name : (Math.random() < .5) : "Antonius" : "Antonia",
+  name: (name !== undefined) ? name : (Math.random() < .5) ? "Antonius" : "Antonia",
   position: [randint(0, GAME_HEIGHT), randint(0, GAME_WIDTH)],
   state: "wander",
   health: randint(5, 40),
-  damage: randint(2, 6)),
+  damage: randint(2, 6),
   moveSpeed: randint(20, 35),
   digSpeed: randint(2, 3),
-  faction = randint(0, FACTION.NUM),
-  color = FACTION.COLOR[faction]
+  faction: randint(0, FACTION.NUM),
+  color: undefined // set this later
 };
 
 Ant.prototype.distanceTo = function(entity) {
@@ -82,7 +82,6 @@ Ant.prototype.dig() = function() {
     kill(digTarget);
     digTarget = null;
   }
-  
 };
 
 Ant.prototype.move = function(moveVector) {
@@ -130,7 +129,7 @@ Ant.prototype.eat = function() {
     damage += (1/60) * foodSource.quality * .2;
   }
 };
-  
+
 Ant.prototype.eatMove() = function(){
   moveVector = [foodSource.position[0] - position[0],
                 foodSource.position[1] - position[1]];
